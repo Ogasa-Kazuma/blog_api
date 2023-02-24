@@ -18,15 +18,20 @@ func queryIndex() {
 
 	params := &dynamodb.QueryInput{
 		// aws.Stringはポインタ型への変換を行う
-		IndexName:              aws.String("content-index"),
-		TableName:              aws.String("articles"),
-		KeyConditionExpression: aws.String("content = :test_content"),
+		// IndexName:              aws.String("content-index"),
+		TableName: aws.String("articles"),
+		// 左辺がDynamoに設定済みのキーの名前、右辺が具体的な名前
+		KeyConditionExpression: aws.String("article_id = :id"),
 		FilterExpression:       aws.String("contains(content, :test)"),
 		// KeyConditionExpression: aws.String("article_id = :id"),
+		// 検索時のキー条件やfilter条件で使う変数的なものを定義
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
-			":test_content": {
-				S: aws.String("test_content"),
+			":id": {
+				S: aws.String("id1"),
 			},
+			// ":test_content": {
+			// 	S: aws.String("test_content"),
+			// },
 			":test": {
 				S: aws.String("test"),
 			},
