@@ -11,17 +11,18 @@ import (
 	//	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 )
 
-func queryIndex() {
+func searchFreeWord() {
 	dbClientSession := session.Must(session.NewSession())
 	// Create a DynamoDB client with additional configuration
 	ddb := dynamodb.New(dbClientSession, aws.NewConfig().WithRegion("ap-northeast-1"))
 
+	searchWord := "content"
 	params := &dynamodb.ScanInput{
 		TableName:        aws.String("articles"),
 		FilterExpression: aws.String("contains(content, :search_text)"),
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":search_text": {
-				S: aws.String("content"),
+				S: aws.String(searchWord),
 			},
 		},
 	}
@@ -33,8 +34,61 @@ func queryIndex() {
 	fmt.Println(res)
 }
 
+func queryByPkAndSk(article_id string, sk string) {
+	dbClientSession := session.Must(session.NewSession())
+	// Create a DynamoDB client with additional configuration
+	ddb := dynamodb.New(dbClientSession, aws.NewConfig().WithRegion("ap-northeast-1"))
+
+	params := &dynamodb.QueryInput{
+		TableName:              aws.String("articles"),
+		KeyConditionExpression: aws.String("article_id = :id AND SK = :SK"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":id": {
+				S: aws.String(article_id),
+			},
+			":SK": {
+				S: aws.String(sk),
+			},
+		},
+	}
+	res, err := ddb.Query(params)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(res)
+}
+
+func reqArticlesByCategories(article_id string, sk string) {
+	dbClientSession := session.Must(session.NewSession())
+	// Create a DynamoDB client with additional configuration
+	ddb := dynamodb.New(dbClientSession, aws.NewConfig().WithRegion("ap-northeast-1"))
+
+	params := &dynamodb.QueryInput{
+		TableName:              aws.String("articles"),
+		KeyConditionExpression: aws.String("article_id = :id AND begins_with(SK, :SK)"),
+		// FilterExpression:       aws.String("begins_with(categories, )"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":id": {
+				S: aws.String(article_id),
+			},
+			":SK": {
+				S: aws.String(sk),
+			},
+		},
+	}
+	res, err := ddb.Query(params)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(res)
+}
+
 func main() {
-	queryIndex()
+	// searchFreeWord()
+	// queryByPkAndSk("id1", "title")
+	reqArticlesByCategories("id1", "t")
 	// フリーワード検索
 	// カテゴリ別検索
 	// 新着順検索
