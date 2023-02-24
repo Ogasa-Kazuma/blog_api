@@ -16,28 +16,16 @@ func queryIndex() {
 	// Create a DynamoDB client with additional configuration
 	ddb := dynamodb.New(dbClientSession, aws.NewConfig().WithRegion("ap-northeast-1"))
 
-	params := &dynamodb.QueryInput{
-		// aws.Stringはポインタ型への変換を行う
-		// IndexName:              aws.String("content-index"),
-		TableName: aws.String("articles"),
-		// 左辺がDynamoに設定済みのキーの名前、右辺が具体的な名前
-		KeyConditionExpression: aws.String("article_id = :id"),
-		FilterExpression:       aws.String("contains(content, :test)"),
-		// KeyConditionExpression: aws.String("article_id = :id"),
-		// 検索時のキー条件やfilter条件で使う変数的なものを定義
+	params := &dynamodb.ScanInput{
+		TableName:        aws.String("articles"),
+		FilterExpression: aws.String("contains(content, :search_text)"),
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
-			":id": {
-				S: aws.String("id1"),
-			},
-			// ":test_content": {
-			// 	S: aws.String("test_content"),
-			// },
-			":test": {
-				S: aws.String("test"),
+			":search_text": {
+				S: aws.String("content"),
 			},
 		},
 	}
-	res, err := ddb.Query(params)
+	res, err := ddb.Scan(params)
 	if err != nil {
 		panic(err)
 	}
