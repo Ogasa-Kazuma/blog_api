@@ -25,6 +25,7 @@ jobs:
           await github.rest.issues.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            title: "test_issue"
+            title: "test_issue",
+            body: "WoW!"
           });
       
