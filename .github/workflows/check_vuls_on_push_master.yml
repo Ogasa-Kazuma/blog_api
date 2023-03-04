@@ -22,7 +22,7 @@ jobs:
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          octokit.rest.issues.create({
+          github.rest.issues.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
             title: "test_issue"
