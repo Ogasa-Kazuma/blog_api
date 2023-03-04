@@ -22,4 +22,5 @@ jobs:
         go install github.com/uudashr/gocognit/cmd/gocognit@latest
         set +e
         gocognit -over 15 . | tee cognit_report
+        cat cognit_report
       
