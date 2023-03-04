@@ -18,9 +18,13 @@ jobs:
         go-version: 1.20.1
     
     - name: GitHub Script
-      run: |
-        go install github.com/uudashr/gocognit/cmd/gocognit@latest
-        set +e
-        gocognit -over 15 . | tee cognit_report
-        cat cognit_report
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: "test_issue"
+          });
       
