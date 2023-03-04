@@ -1,17 +1,16 @@
 name: check vulnability
 
 on:
-  pull_request:
-    type: [opened]
+  push:
+    branches:
+      - master
       
 jobs:
-  Check-Vulnability:
+  Vulnability-Check:
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-      with:
-        ref: ${{github.event.pull_request.head.ref}}
     
     - name: Setup Go execution environment
       uses: actions/setup-go@v3
@@ -23,11 +22,9 @@ jobs:
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          github.issues.createComment({
-            issue_number: context.issue.number,
+          octokit.rest.issues.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: '? Thanks for reporting!'
-          })
-      
+            title: "test_issue"
+          });
       
